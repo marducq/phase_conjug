@@ -9,14 +9,13 @@ import random
 random.seed(42)
 
 class DipoleSimulation:
-    def __init__(self, Nb_particule=100, W=3, L=1, k_in=25, N_x=100, N_y=300 , ksi = 1 ):
+    def __init__(self, Nb_particule=100, W=3, L=1, k_in=25, N_x=100, N_y=300 ):
         self.Nb_particule = Nb_particule  # nombre de dipôles
         self.W = W                        # largeur du milieu
         self.L = L                        # longueur du milieu
         self.k_in = k_in                  # nombre d'onde incident
         self.N_x = N_x                    # résolution de la grille pour les particules
         self.N_y = N_y
-        self.ksi = ksi
         self.alpha = 4 * 1j / (k_in**2)
         self.pas_x = L / N_x
         self.pas_y = W / N_y
