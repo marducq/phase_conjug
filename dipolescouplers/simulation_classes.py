@@ -92,7 +92,7 @@ class DipoleSimulation:
 
     def build_TM(self, theta_vals, N_obs_x=100, N_obs_y=30):
         
-        Pour chaque angle theta, extrait le champ en sortie (à x=2L) 
+        # pour chaque angle theta, extrait le champ en sortie (à x=2L) 
         et construit la matrice de transmission pré transposée.
         
         TM_pretransposee = []
