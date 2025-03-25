@@ -1,10 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-# In[ ]:
-
-
-# simulation_classes.py
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,9 +27,7 @@ class DipoleSimulation:
         self.A = self.compute_interaction_matrix()
         
     def creation_grille_avec_points_aleat(self):
-        """
-        Création d'une grille sur [0,L]x[0,W] et sélection aléatoire de Nb_particule positions.
-        """
+
         x = np.linspace(0, self.L, self.N_x)
         y = np.linspace(0, self.W, self.N_y)
         X, Y = np.meshgrid(x, y)
@@ -53,16 +45,12 @@ class DipoleSimulation:
             return 0
         return 1j * special.hankel1(0, k0 * R) / 4
 
-    def champ_incident(self, x, y, thet):
-        """
-        Retourne le champ incident pour une onde plane d'angle d'incidence thet.
-        """
+    def champ_incident(self, x, y, thet) :
+        
         return np.exp(1j * self.k_in * (np.cos(thet)*x + np.sin(thet)*y))
     
     def compute_interaction_matrix(self):
-        """
-        Construit la matrice A d'interaction entre dipôles.
-        """
+        
         A = np.zeros((self.Nb_particule, self.Nb_particule), dtype=complex)
         for j in range(self.Nb_particule):
             for k in range(self.Nb_particule):
@@ -76,10 +64,7 @@ class DipoleSimulation:
         return A
     
     def compute_field(self, thet, N_obs_x=100, N_obs_y=30):
-        """
-        Calcule le champ total dans le milieu pour une incidence d'angle thet.
-        Retourne (x_obs, y_obs, E_total) où E_total est la carte du champ.
-        """
+      
         # Calcul du champ incident sur chaque dipôle
         E0 = np.array([self.champ_incident(x, y, thet) 
                        for x, y in zip(self.X_random, self.Y_random)])
@@ -106,10 +91,10 @@ class DipoleSimulation:
         return x_obs, y_obs, E_total
 
     def build_TM(self, theta_vals, N_obs_x=100, N_obs_y=30):
-        """
-        Pour chaque angle dans theta_vals, extrait le champ en sortie (à x=2L) 
-        et construit la matrice de transmission pré-transposée.
-        """
+        
+        Pour chaque angle theta, extrait le champ en sortie (à x=2L) 
+        et construit la matrice de transmission pré transposée.
+        
         TM_pretransposee = []
         for idx, th in enumerate(theta_vals):
             progress = (idx+1) / len(theta_vals) * 100
@@ -124,33 +109,23 @@ class DipoleSimulation:
 
 class PhaseConjugation:
     def __init__(self, TM_pretransposee):
-        """
-        TM_pretransposee : matrice de transmission pré-transposée de forme (N_input, N_obs_y)
-        """
+        
         self.TM_pretransposee = TM_pretransposee
-        # Calcul de l'adjoint (conjugué-transposé) de TM_pretransposee
+      
         self.TM_dagger = TM_pretransposee.conj()  # forme (N_obs_y, N_input)
-        # Pour la propagation, nous définissons la TM dans la convention (N_obs_y, N_input)
+        
         self.TM = TM_pretransposee.T
         print("TM shape est" , self.TM.shape)
 
     def compute_input_field(self, desired_output):
-        """
-        Calcule le champ d'entrée optimal via la multiplication par l'adjoint de la TM.
-        desired_output : vecteur cible de taille (N_obs_y,)
-        Retourne input_field de taille (N_input,)
-        """
+     
         return np.dot(self.TM_dagger, desired_output)
 
     def phase_only(self, input_field):
-        """
-        Conserve uniquement la phase du champ d'entrée.
-        """
+        
         return np.exp(1j * np.angle(input_field))
 
     def compute_focused_output(self, phase_input):
-        """
-        Propagation du champ d'entrée modifié par la TM pour obtenir le champ de sortie focalisé.
-        """
+        
         return np.dot(self.TM, phase_input)
 
